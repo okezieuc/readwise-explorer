@@ -75,7 +75,7 @@ function App() {
     fetchAllHighlights();
   }, []);
 
-  if (hasFetchedHighlights && highlights.length == 0) {
+  if (hasFetchedHighlights && highlights.length === 0) {
     return (
       <div>
         <h1>Explorer</h1>

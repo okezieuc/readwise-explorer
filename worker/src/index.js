@@ -3,7 +3,7 @@ import { Hono } from 'hono';
 import { fetchFromReadwiseExportApi } from '../utils/readWiseExportApi';
 const app = new Hono();
 
-app.get('/', async (c) => {
+app.get('/api', async (c) => {
 	const ai = new Ai(c.env.AI);
 
 	const answer = await ai.run('@cf/meta/llama-2-7b-chat-int8', {
@@ -13,7 +13,7 @@ app.get('/', async (c) => {
 	return c.json(answer);
 });
 
-app.get('/all', async (c) => {
+app.get('/api/all', async (c) => {
 	const allHighlightsQuery = `SELECT * from highlights`;
 
 	const { results } = await c.env.DB.prepare(allHighlightsQuery).bind().all();
@@ -21,7 +21,7 @@ app.get('/all', async (c) => {
 	return c.json(results);
 });
 
-app.post('/fetch', async (c) => {
+app.post('/api/fetch', async (c) => {
 	const ai = new Ai(c.env.AI);
 
 	const { readwiseApiKey } = await c.req.json();
@@ -73,7 +73,7 @@ app.post('/fetch', async (c) => {
 	return c.json({ success: 'uploaded all highlights to vectorize' });
 });
 
-app.get('/similar', async (c) => {
+app.get('/api/similar', async (c) => {
 	const ai = new Ai(c.env.AI);
 
 	// get the ID of the document the request was sent for

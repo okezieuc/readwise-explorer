@@ -12,4 +12,4 @@ index_name = "explorer-index"
 [[d1_databases]]
 binding = "DB" # i.e. available in your Worker on env.DB
 database_name = "explorer-database"
-database_id = "3408d580-ee25-43db-8314-71aa40f71e68"
+database_id = "63b67a5c-64a2-4237-804b-0d11c2d0baa7"

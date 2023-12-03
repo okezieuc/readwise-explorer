@@ -4,6 +4,40 @@ import "./App.css";
 function App() {
   const [highlights, setHiglights] = useState([]);
   const [relatedHighlights, setRelatedHighlights] = useState([]);
+  const [hasFetchedHighlights, setHasFetchedHighlights] = useState(false);
+  const [apiKey, setApiKey] = useState("");
+
+  function loadReadwiseHighlights() {
+    const url = "/api/fetch";
+
+    const requestBody = {
+      readwiseApiKey: apiKey,
+    };
+
+    // Make the POST request
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // Handle the response data
+        console.log("Success:", data);
+        fetchAllHighlights();
+      })
+      .catch((error) => {
+        // Handle errors
+        console.error("Error:", error);
+      });
+  }
 
   async function fetchAllHighlights() {
     try {
@@ -15,7 +49,7 @@ function App() {
 
       const jsonData = await response.json();
       setHiglights(jsonData);
-      console.log(jsonData);
+      setHasFetchedHighlights(true);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -40,6 +74,24 @@ function App() {
   useEffect(() => {
     fetchAllHighlights();
   }, []);
+
+  if (hasFetchedHighlights && highlights.length == 0) {
+    return (
+      <div>
+        <h1>Explorer</h1>
+        <div>
+          <input
+            type="text"
+            placeholder="Enter your Readwise API Key"
+            onChange={(e) => setApiKey(e.target.value)}
+          />
+          <button onClick={() => loadReadwiseHighlights()}>
+            Fetch my Highlights
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div class="flex-container">
@@ -75,7 +127,12 @@ function Highlight({ text, id, fetchSimilarFunc, hideSimilarButton = false }) {
       <div>{text}</div>
       {hideSimilarButton ? null : (
         <div>
-          <button onClick={fetchSimilarFunc} className="similar-highlights-button">Similar Highlights</button>
+          <button
+            onClick={fetchSimilarFunc}
+            className="similar-highlights-button"
+          >
+            Similar Highlights
+          </button>
         </div>
       )}
     </div>

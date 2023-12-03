@@ -1,70 +1,56 @@
-# Getting Started with Create React App
+# Readwise Explorer
+This app fetches all your highlights from your Readwise account and uses AI to help you discover related insights in your highlights.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Local Development Guide
+You need to have a Cloudflare Account on the Workers Standard plan.
+> The reason why you need an account on the Workers Standard plan is that you might run into a "Too many subrequests error" if you run it on the Bundled plan. Cloudflare Workers on the Bundled plan are limited to a maximum of 50 subrequests.
 
-## Available Scripts
+1. Create a D1 database to store your highlights
+    ```bash
+    npx wrangler d1 create explorer-database
+    ```
 
-In the project directory, you can run:
+    A database ID will be printed to your console. Replace the `database_id` with that database ID.
 
-### `npm start`
+2. Create a `highlights` table in your database.
+    ```bash
+    npx wrangler d1 execute explorer-database --command "CREATE TABLE IF NOT EXISTS highlights (id INTEGER PRIMARY KEY, text TEXT NOT NULL)"
+    ```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+3. Create a vectorize index to store vector embeddings
+    ```bash
+    npx wrangler vectorize create explorer-index --dimensions=768 --metric=cosine
+    ```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+4. Install dependencies in the React Project
+    ```bash
+    npm install
+    ```
+    Run this in the root directory of the project
 
-### `npm test`
+5. Enter the `worker` directory and install dependencies for developing Cloudflare workers
+    ```bash
+    cd worker
+    npm install
+    ```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+6. Start a remote workers development server on port `3333`
+    ```bash
+    npx wrangler dev --port 3333 --remote
+    ```
 
-### `npm run build`
+    The `--remote` flag is important, as AI features that are essential for this app to work are not available when the development server is running locally.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    Make sure to run this from inside the `worker` directory.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+    It is important to explicitly select a port where the Cloudflare worker will be served, as we make use of `http-proxy-middleware` in the React project to forward requests to `/api` to the Cloudflare worker. If you select a port other than `3333`, make sure to update it in `src/setupProxy.js`.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+7. Start a React Development server
+    ```bash
+    npm start
+    ```
 
-### `npm run eject`
+8. Visit `http://localhost:3000` to view the running application.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Possible Future Improvements
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

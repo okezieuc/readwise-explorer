@@ -4,3 +4,12 @@ compatibility_date = "2023-11-21"
 
 [ai]
 binding = "AI"
+
+[[vectorize]]
+binding = "VECTORIZE_INDEX" # available within your Worker on env.VECTORIZE_INDEX
+index_name = "explorer-index"
+
+[[d1_databases]]
+binding = "DB" # i.e. available in your Worker on env.DB
+database_name = "explorer-database"
+database_id = "3408d580-ee25-43db-8314-71aa40f71e68"

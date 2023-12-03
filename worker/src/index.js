@@ -1,7 +1,10 @@
 import { Ai } from '@cloudflare/ai';
 import { Hono } from 'hono';
+import { serveStatic } from 'hono/cloudflare-workers';
 import { fetchFromReadwiseExportApi } from '../utils/readWiseExportApi';
 const app = new Hono();
+
+app.get('/*', serveStatic({ root: './' }));
 
 app.get('/api', async (c) => {
 	const ai = new Ai(c.env.AI);

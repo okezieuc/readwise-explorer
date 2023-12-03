@@ -21,6 +21,22 @@ function App() {
     }
   }
 
+  async function fetchRelatedHighlights(id) {
+    try {
+      const response = await fetch(`/api/similar?highlightId=${id}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const jsonData = await response.json();
+      setRelatedHighlights(jsonData);
+      console.log(jsonData);
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  }
+
   useEffect(() => {
     fetchAllHighlights();
   }, []);
@@ -30,19 +46,40 @@ function App() {
       <div class="flex-column">
         <h2>My Highlights</h2>
         {highlights.map((highlight) => (
-          <Highlight text={highlight.text} id={highlight.id} />
+          <Highlight
+            text={highlight.text}
+            id={highlight.id}
+            fetchSimilarFunc={() => fetchRelatedHighlights(highlight.id)}
+          />
         ))}
       </div>
 
       <div class="flex-column">
         <h2>Related</h2>
+        {relatedHighlights.map((highlight) => (
+          <Highlight
+            text={highlight.text}
+            id={highlight.id}
+            fetchSimilarFunc={() => fetchRelatedHighlights(highlight.id)}
+            hideSimilarButton={true}
+          />
+        ))}
       </div>
     </div>
   );
 }
 
-function Highlight({ text, id }) {
-  return <div className="highlight">This: {text}</div>;
+function Highlight({ text, id, fetchSimilarFunc, hideSimilarButton = false }) {
+  return (
+    <div className="highlight">
+      <div>{text}</div>
+      {hideSimilarButton ? null : (
+        <div>
+          <button onClick={fetchSimilarFunc} className="similar-highlights-button">Similar Highlights</button>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default App;

@@ -17,3 +17,17 @@
   margin-top: 24px;
   margin-bottom: 24px;
 }
+
+.similar-highlights-button {
+  border: none;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 24px;
+  padding-right: 24px;
+  margin-top: 12px;
+}
+
+.similar-highlights-button:hover {
+  background-color: black;
+  color: white;
+}

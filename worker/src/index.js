@@ -13,6 +13,14 @@ app.get('/', async (c) => {
 	return c.json(answer);
 });
 
+app.get('/all', async (c) => {
+	const allHighlightsQuery = `SELECT * from highlights`;
+
+	const { results } = await c.env.DB.prepare(allHighlightsQuery).bind().all();
+
+	return c.json(results);
+});
+
 app.post('/fetch', async (c) => {
 	const ai = new Ai(c.env.AI);
 

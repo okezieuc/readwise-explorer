@@ -52,5 +52,47 @@ You need to have a Cloudflare Account on the Workers Standard plan.
 
 8. Visit `http://localhost:3000` to view the running application.
 
+## Deployment Guide (On Cloudflare Workers)
+1. Build the React application
+    ```bash
+    npm run build
+    ```
+
+2. Copy the built assets into `/worker/build`
+    ```bash
+    cp -r build worker/
+    ```
+
+3. Enter the `worker` directory and deploy the worker
+    ```bash
+    cd worker
+    npx wrangler deploy
+    ```
+
+    This deploys the worker and assets to Cloudflare.
+
+## Reseting your D1 Database and Vectorize Index
+Run the following commands to empty your database and reset your vectorize index.
+
+1. Delete all entries from the highlights table.
+    ```bash
+    npx wrangler d1 execute explorer-database --command "DROP * from highlights"
+    ```
+
+2. Delete the `explorer-index` Vectorize index
+    ```bash
+    npx wrangler delete vectorize
+    ```
+
+3. Recreate the Vectorize index
+    ```bash
+    npx wrangler vectorize create explorer-index --dimensions=768 --metric=cosine
+    ```
+
+You will now have an empty highlights table and an empty Vectorize index, and everything should be back to default.
+
 ## Possible Future Improvements
 
+- Building a multi-tenant version of this that can store multiple users' highlights.
+- Continously syncing highlights from Readwise, rather than only syncing the first time one uses it.
+- Writing a GitHub CI workflow that automatically deploys the Worker to Cloudflare on push to GitHub.

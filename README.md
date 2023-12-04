@@ -97,13 +97,13 @@ Run the following commands to empty your database and reset your vectorize index
 1. Delete all entries from the highlights table.
 
    ```bash
-   npx wrangler d1 execute explorer-database --command "DROP * from highlights"
+   npx wrangler d1 execute explorer-database --command "DELETE from highlights"
    ```
 
 2. Delete the `explorer-index` Vectorize index
 
    ```bash
-   npx wrangler delete vectorize
+   npx wrangler vectorize delete explorer-index
    ```
 
 3. Recreate the Vectorize index
@@ -112,6 +112,13 @@ Run the following commands to empty your database and reset your vectorize index
    ```
 
 You will now have an empty highlights table and an empty Vectorize index, and everything should be back to default.
+
+4. (Optional) If you already deployed your worker, you will have to redeploy it.
+   ```bash
+   cd worker
+   npx wrangler deploy
+   ```
+
 
 ## Possible Future Improvements
 
